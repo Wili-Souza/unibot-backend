@@ -2,18 +2,18 @@ require("dotenv").config()
 
 const User = require("../models/userModel");
 
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcrypt")
-const saltRounds = 10
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 exports.user_login_get = (req, res) => {
-    res.send("LOGIN PAGE")
+    res.send("LOGIN PAGE");
 }
 
 // Login - authentication
 exports.user_login = (req, res) => {
-    const email = req.body.email
-    const password = req.body.password
+    const email = req.body.email;
+    const password = req.body.password;
 
     User.countDocuments({ email: email }, (err, c) => {
         if (err) { res.status(500).json({ error: true, message: 'internal error'}); }
@@ -21,14 +21,12 @@ exports.user_login = (req, res) => {
             User.findOne({ email: email }, (err, data) => {
                 bcrypt.compare(password, data.password, function(err, result) {
                     if (err) {
-                        res.status(400).send({error: true, message: "internal error"})
+                        res.status(400).send({error: true, message: "internal error"});
                     }
                     if (result) {
-                        const id = data.user_id
-                        const token = jwt.sign({ id }, process.env.SECRET, {
-                            expiresIn: 1800 // 15min
-                        })
-                        return res.status(200).json({ auth: true, token: token })
+                        const id = data.user_id;
+                        const token = jwt.sign({ id }, process.env.SECRET, {});
+                        return res.status(200).json({ auth: true, token: token });
                     } 
 
                     res.status(401).json({
@@ -49,9 +47,9 @@ exports.user_login = (req, res) => {
 
 // register
 exports.create_user = (req, res) => {
-    const email = req.body.email
-    var admin = req.body.admin
-    var password = req.body.password
+    const email = req.body.email;
+    var admin = req.body.admin;
+    var password = req.body.password;
 
     User.countDocuments({ email: email }, (err, c) => {
         if (err) {
@@ -107,7 +105,7 @@ exports.get_all_users = (req, res) => {
                 message: 'internal error'
             });
         }
-        res.status(200).send(data)
+        res.status(200).send(data);
     })
 }
 
@@ -118,7 +116,7 @@ exports.get_one_user = (req, res) => {
     .then( response => {
         res.status(200).send(response);
     }, err => {
-        console.log(err)
+        console.log(err);
         res.status(500).send(err);
     });
 }
@@ -126,31 +124,31 @@ exports.get_one_user = (req, res) => {
 exports.update_one_user = (req, res) => {
     const userId = req.params.id;
     
-    const email = req.body.email
-    var admin = req.body.admin
-    var password = req.body.password
+    const email = req.body.email;
+    var admin = req.body.admin;
+    var password = req.body.password;
 
     User.find({ _id: userId }, (err, data) => {
         if (err) { 
-            res.status(500).send({error:true, message:"internal error"}) 
+            res.status(500).send({error:true, message:"internal error"});
         }
 
         if (email !== data.email) {
             User.countDocuments({ email:email }, (err, c) => {
                 if (err) { 
-                    res.status(500).send({error:true, message:"internal error"}) 
+                    res.status(500).send({error:true, message:"internal error"}) ;
                 }
                 if (c > 0) {
                     res.status(500).send({
                         success: false, 
                         message: "Email already registered"
-                    })
+                    });
                 }
                 if (admin !== true) { admin = false }
 
                 bcrypt.hash(password, saltRounds, (err, hash) => {
                     if (err) { 
-                        res.status(500).send({error:true, message:"internal error"}) 
+                        res.status(500).send({error:true, message:"internal error"}); 
                     }
 
                     const updatedUser ={
@@ -181,7 +179,7 @@ exports.delete_one_user = (req, res) => {
     .then( () => {
         res.status(200).send("success");
     }, err => {
-        console.log(err)
+        console.log(err);
         res.status(500).send(err);
     });
 }
