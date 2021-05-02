@@ -24,9 +24,9 @@ exports.user_login = (req, res) => {
                         res.status(400).send({error: true, message: "internal error"});
                     }
                     if (result) {
-                        const id = data.user_id;
+                        const id = data._id;
                         const token = jwt.sign({ id }, process.env.SECRET, {});
-                        return res.status(200).json({ auth: true, token: token });
+                        return res.status(200).json({ auth: true, userId: id, token: token });
                     } 
 
                     res.status(401).json({
